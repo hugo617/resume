@@ -23,8 +23,8 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   output: 'export',
-  basePath: '/react-resume-template',
-  assetPrefix: '/react-resume-template/',
+  basePath: '/resume',
+  assetPrefix: '/resume/',
   trailingSlash: true,
   images: {
     remotePatterns: [
