@@ -1,6 +1,7 @@
 /* eslint-env node */
 module.exports = {
-  siteUrl: 'reactresume.com',
+  siteUrl: 'https://hugo617.github.io',
+  basePath: '/react-resume-template',
   exclude: ['/404*', '/500*'],
   transform: async (config, path) => {
     return {
