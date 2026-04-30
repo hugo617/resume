@@ -1,5 +1,6 @@
 import {
   Document,
+  Font,
   Page,
   PDFDownloadLink,
   StyleSheet,
@@ -9,6 +10,11 @@ import {
 import {FC, memo, useMemo} from 'react';
 
 import {useLocale} from '../context/LocaleContext';
+
+Font.register({
+  family: 'Noto Sans SC',
+  src: '/resume/fonts/NotoSansSC-Subset.ttf',
+});
 
 const GREEN = '#1b5e20';
 const GRAY = '#888888';
@@ -26,7 +32,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   name: {
-    fontSize: 22,
+    fontSize: 30,
     fontFamily: 'Helvetica-Bold',
     marginBottom: 4,
     letterSpacing: 0.5,
@@ -47,7 +53,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 12,
+    gap: 16,
     fontSize: 9,
   },
   section: {
@@ -107,7 +113,7 @@ const styles = StyleSheet.create({
   },
   bulletItem: {
     flexDirection: 'row',
-    paddingLeft: 12,
+    paddingLeft: 16,
     paddingRight: 16,
   },
   bulletText: {
@@ -249,7 +255,9 @@ const ResumeDocument: FC<{isZh: boolean}> = memo(({isZh}) => (
 
       <View style={styles.section}>
         <SectionTitle blackPart="mary" greenPart="Sum" />
-        <Text style={styles.summaryText}>{isZh ? resumeData.summaryZh : resumeData.summary}</Text>
+        <Text style={isZh ? [styles.summaryText, {fontFamily: 'Noto Sans SC'}] : styles.summaryText}>
+          {isZh ? resumeData.summaryZh : resumeData.summary}
+        </Text>
       </View>
 
       <View style={styles.section}>
@@ -288,7 +296,7 @@ const DownloadButton: FC<{label: string}> = memo(({label}) => {
   const pdfDoc = useMemo(() => <ResumeDocument isZh={isZh} />, [isZh]);
 
   return (
-    <PDFDownloadLink document={pdfDoc} fileName={filename}>
+    <PDFDownloadLink document={pdfDoc} fileName={filename} key={locale}>
       {({loading}) => (
         <span className={loading ? 'opacity-70' : ''}>{loading ? 'Loading...' : label}</span>
       )}
