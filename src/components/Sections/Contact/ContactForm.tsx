@@ -1,5 +1,7 @@
 import {FC, memo, useCallback, useMemo, useState} from 'react';
 
+import {useLocale} from '../../../context/LocaleContext';
+
 interface FormData {
   name: string;
   email: string;
@@ -7,6 +9,9 @@ interface FormData {
 }
 
 const ContactForm: FC = memo(() => {
+  const {strings} = useLocale();
+  const {form} = strings.contact;
+
   const defaultData = useMemo(
     () => ({
       name: '',
@@ -32,9 +37,6 @@ const ContactForm: FC = memo(() => {
   const handleSendMessage = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      /**
-       * This is a good starting point to wire up your form submission logic
-       * */
       console.log('Data to send: ', data);
     },
     [data],
@@ -45,13 +47,13 @@ const ContactForm: FC = memo(() => {
 
   return (
     <form className="grid min-h-[320px] grid-cols-1 gap-y-4" method="POST" onSubmit={handleSendMessage}>
-      <input className={inputClasses} name="name" onChange={onChange} placeholder="Name" required type="text" />
+      <input className={inputClasses} name="name" onChange={onChange} placeholder={form.namePlaceholder} required type="text" />
       <input
         autoComplete="email"
         className={inputClasses}
         name="email"
         onChange={onChange}
-        placeholder="Email"
+        placeholder={form.emailPlaceholder}
         required
         type="email"
       />
@@ -60,15 +62,15 @@ const ContactForm: FC = memo(() => {
         maxLength={250}
         name="message"
         onChange={onChange}
-        placeholder="Message"
+        placeholder={form.messagePlaceholder}
         required
         rows={6}
       />
       <button
-        aria-label="Submit contact form"
+        aria-label={form.ariaLabel}
         className="w-max rounded-full border-2 border-orange-600 bg-stone-900 px-4 py-2 text-sm font-medium text-white shadow-md outline-none hover:bg-stone-800 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-stone-800"
         type="submit">
-        Send Message
+        {form.submitButton}
       </button>
     </form>
   );

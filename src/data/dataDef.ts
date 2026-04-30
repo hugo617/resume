@@ -28,8 +28,8 @@ export interface Hero {
 }
 
 interface HeroActionItem {
-  href: string;
-  text: string;
+  href?: string;
+  textKey: string;
   primary?: boolean;
   Icon?: ForwardRefExoticComponent<Omit<SVGProps<SVGSVGElement>, 'ref'>>;
 }
@@ -90,7 +90,7 @@ export interface TimelineItem {
   date: string;
   location: string;
   title: string;
-  content: JSX.Element;
+  content: JSX.Element | string;
 }
 
 /**

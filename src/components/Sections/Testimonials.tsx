@@ -2,7 +2,8 @@ import classNames from 'classnames';
 import {FC, memo, UIEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import {isApple, isMobile} from '../../config';
-import {SectionId, testimonial} from '../../data/data';
+import {useLocale} from '../../context/LocaleContext';
+import {SectionId, testimonialAvatars, testimonialImageSrc} from '../../data/data';
 import {Testimonial} from '../../data/dataDef';
 import useInterval from '../../hooks/useInterval';
 import useWindow from '../../hooks/useWindow';
@@ -10,6 +11,7 @@ import QuoteIcon from '../Icon/QuoteIcon';
 import Section from '../Layout/Section';
 
 const Testimonials: FC = memo(() => {
+  const {strings} = useLocale();
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [scrollValue, setScrollValue] = useState(0);
   const [parallaxEnabled, setParallaxEnabled] = useState(false);
@@ -19,14 +21,21 @@ const Testimonials: FC = memo(() => {
 
   const {width} = useWindow();
 
-  const {imageSrc, testimonials} = testimonial;
+  const testimonials = useMemo(
+    () =>
+      strings.testimonials.items.map((item, index) => ({
+        name: item.name,
+        text: item.text,
+        image: testimonialAvatars[index],
+      })) as Testimonial[],
+    [strings.testimonials.items],
+  );
 
   const resolveSrc = useMemo(() => {
-    if (!imageSrc) return undefined;
-    return typeof imageSrc === 'string' ? imageSrc : imageSrc.src;
-  }, [imageSrc]);
+    if (!testimonialImageSrc) return undefined;
+    return typeof testimonialImageSrc === 'string' ? testimonialImageSrc : (testimonialImageSrc as {src: string}).src;
+  }, []);
 
-  // Mobile iOS doesn't allow background-fixed elements
   useEffect(() => {
     setParallaxEnabled(!(isMobile && isApple));
   }, []);
@@ -64,7 +73,6 @@ const Testimonials: FC = memo(() => {
 
   useInterval(next, 10000);
 
-  // If no testimonials, don't render the section
   if (!testimonials.length) {
     return null;
   }
@@ -75,9 +83,9 @@ const Testimonials: FC = memo(() => {
         className={classNames(
           'flex w-full items-center justify-center bg-cover bg-center px-4 py-16 md:py-24 lg:px-8',
           parallaxEnabled && 'bg-fixed',
-          {'bg-neutral-700': !imageSrc},
+          {'bg-neutral-700': !testimonialImageSrc},
         )}
-        style={imageSrc ? {backgroundImage: `url(${resolveSrc}`} : undefined}>
+        style={testimonialImageSrc ? {backgroundImage: `url(${resolveSrc}`} : undefined}>
         <div className="z-10 w-full max-w-screen-md px-4 lg:px-0">
           <div className="flex flex-col items-center gap-y-6 rounded-xl bg-gray-800/60 p-6 shadow-lg">
             <div

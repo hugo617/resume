@@ -1,34 +1,48 @@
 import {ArrowTopRightOnSquareIcon} from '@heroicons/react/24/outline';
 import classNames from 'classnames';
 import Image from 'next/image';
-import {FC, memo, MouseEvent, useCallback, useEffect, useRef, useState} from 'react';
+import {FC, memo, MouseEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import {isMobile} from '../../config';
+import {useLocale} from '../../context/LocaleContext';
 import {portfolioItems, SectionId} from '../../data/data';
 import {PortfolioItem} from '../../data/dataDef';
 import useDetectOutsideClick from '../../hooks/useDetectOutsideClick';
 import Section from '../Layout/Section';
 
 const Portfolio: FC = memo(() => {
+  const {strings} = useLocale();
+
+  const items = useMemo(
+    () =>
+      portfolioItems.map((staticItem, index) => {
+        const localeItem = strings.portfolio.items[index];
+        return {
+          title: localeItem.title,
+          description: localeItem.description,
+          url: staticItem.url,
+          image: staticItem.image,
+        } as PortfolioItem;
+      }),
+    [strings.portfolio.items],
+  );
+
   return (
     <Section className="bg-neutral-800" sectionId={SectionId.Portfolio}>
       <div className="flex flex-col gap-y-8">
-        <h2 className="self-center text-xl font-bold text-white">Check out some of my work</h2>
+        <h2 className="self-center text-xl font-bold text-white">{strings.portfolio.heading}</h2>
         <div className=" w-full columns-2 md:columns-3 lg:columns-4">
-          {portfolioItems.map((item, index) => {
-            const {title, image} = item;
-            return (
-              <div className="pb-6" key={`${title}-${index}`}>
-                <div
-                  className={classNames(
-                    'relative h-max w-full overflow-hidden rounded-lg shadow-lg shadow-black/30 lg:shadow-xl',
-                  )}>
-                  <Image alt={title} className="h-full w-full" placeholder="blur" src={image} />
-                  <ItemOverlay item={item} />
-                </div>
+          {items.map((item, index) => (
+            <div className="pb-6" key={`${item.title}-${index}`}>
+              <div
+                className={classNames(
+                  'relative h-max w-full overflow-hidden rounded-lg shadow-lg shadow-black/30 lg:shadow-xl',
+                )}>
+                <Image alt={item.title} className="h-full w-full" placeholder="blur" src={item.image} />
+                <ItemOverlay item={item} />
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
     </Section>
@@ -44,7 +58,6 @@ const ItemOverlay: FC<{item: PortfolioItem}> = memo(({item: {url, title, descrip
   const linkRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
-    // Avoid hydration styling errors by setting mobile in useEffect
     if (isMobile) {
       setMobile(true);
     }

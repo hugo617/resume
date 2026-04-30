@@ -4,8 +4,10 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import {FC, Fragment, memo, useCallback, useMemo, useState} from 'react';
 
+import {useLocale} from '../../context/LocaleContext';
 import {SectionId} from '../../data/data';
 import {useNavObserver} from '../../hooks/useNavObserver';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export const headerID = 'headerNav';
 
@@ -38,7 +40,7 @@ const DesktopNav: FC<{navSections: SectionId[]; currentSection: SectionId | null
     const inactiveClass = classNames(baseClass, 'text-neutral-100');
     return (
       <header className="fixed top-0 z-50 hidden w-full bg-neutral-900/50 p-4 backdrop-blur sm:block" id={headerID}>
-        <nav className="flex justify-center gap-x-8">
+        <nav className="flex items-center justify-center gap-x-8">
           {navSections.map(section => (
             <NavItem
               activeClass={activeClass}
@@ -48,6 +50,7 @@ const DesktopNav: FC<{navSections: SectionId[]; currentSection: SectionId | null
               section={section}
             />
           ))}
+          <LanguageSwitcher />
         </nav>
       </header>
     );
@@ -107,6 +110,7 @@ const MobileNav: FC<{navSections: SectionId[]; currentSection: SectionId | null}
                       section={section}
                     />
                   ))}
+                  <LanguageSwitcher />
                 </nav>
               </div>
             </Transition.Child>
@@ -124,13 +128,15 @@ const NavItem: FC<{
   inactiveClass: string;
   onClick?: () => void;
 }> = memo(({section, current, inactiveClass, activeClass, onClick}) => {
+  const {strings} = useLocale();
+  const label = strings.nav[section as keyof typeof strings.nav] ?? section;
   return (
     <Link
       className={classNames(current ? activeClass : inactiveClass)}
       href={`/#${section}`}
       key={section}
       onClick={onClick}>
-      {section}
+      {label}
     </Link>
   );
 });
